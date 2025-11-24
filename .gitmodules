@@ -10,3 +10,7 @@
 	path = LibLabortechAux/LabEdc
 	url = https://github.com/Labortech/LibLabortechAux--LabEdc.git
 	branch = community_toolkit
+[submodule "LibLabortechAux/LabEft"]
+	path = LibLabortechAux/LabEft
+	url = https://github.com/Labortech/LibLabortechAux--LabEft.git
+	branch = main

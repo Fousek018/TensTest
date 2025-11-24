@@ -1,0 +1,12 @@
+[submodule "BaseLib"]
+	path = BaseLib
+	url = https://github.com/vbloky/BaseLib.git
+	branch = dev/community_toolkit
+[submodule "LibLabortech"]
+	path = LibLabortech
+	url = https://github.com/Labortech/LibLabortech.git
+	branch = community_toolkit
+[submodule "LibLabortechAux/LabEdc"]
+	path = LibLabortechAux/LabEdc
+	url = https://github.com/Labortech/LibLabortechAux--LabEdc.git
+	branch = community_toolkit

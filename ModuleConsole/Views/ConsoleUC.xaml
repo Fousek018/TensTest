@@ -1,0 +1,421 @@
+﻿<UserControl xmlns:UserControls="clr-namespace:MyControls.UserControls;assembly=MyControls"
+			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"             
+	
+			 xmlns:Tx="clr-namespace:Vbloky.Translation;assembly=AppTranslation"
+			 xmlns:Views1="clr-namespace:Simatic.Views;assembly=Simatic" 
+			 xmlns:local="clr-namespace:ModuleConsole.Views" 
+			 xmlns:glb="clr-namespace:Globals.DataTypes;assembly=Globals"
+			 xmlns:converters="clr-namespace:BaseUtils;assembly=BaseUtils"
+			 xmlns:labConverters="clr-namespace:LabBase.Converters;assembly=LabBase"
+	
+
+          xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
+          xmlns:Base="clr-namespace:MyControls.Base;assembly=MyControls"
+		mc:Ignorable="d"
+		x:Class="ModuleConsole.Views.ConsoleUC"             
+	
+          Style="{DynamicResource MetroUserControlStyle}"
+          Background="{DynamicResource MaterialDesignPaper}"
+          TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        
+			 
+		xmlns:load="clr-namespace:BaseUtils.CommandBehaviors;assembly=BaseUtils"
+		load:LoadedUnloadedBehavior.LoadedCommand="{Binding LoadedCommand}"
+		load:LoadedUnloadedBehavior.UnloadedCommand="{Binding UnloadedCommand}"
+			 
+			 xmlns:vm="clr-namespace:ModuleConsole.ViewModels"
+			 d:DataContext="{d:DesignInstance Type=vm:ConsoleVM}"
+ >
+	<UserControl.Resources>
+		<SolidColorBrush x:Key="iniFile" Color="WhiteSmoke"/>
+		<SolidColorBrush x:Key="adminMethods" Color="Aqua"/>
+		<SolidColorBrush x:Key="defaultMethods" Color="Yellow"/>
+		<SolidColorBrush x:Key="userMethods" Color="Coral"/>
+
+		<Style x:Key="btnSet" TargetType="{x:Type Button}" BasedOn="{StaticResource BaseButton}">
+			<Setter Property="MinWidth" Value="70"/>
+			<Setter Property="MinHeight" Value="34"/>
+		</Style>
+	</UserControl.Resources>
+
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="Auto"/>
+			<ColumnDefinition/>
+		</Grid.ColumnDefinitions>
+
+		<!-- levý sloupec -->
+		<Border Grid.Column="0" Style="{StaticResource DefaultBorder}">
+			<StackPanel>
+				<GroupBox Header="{Tx:T Info}" Style="{StaticResource WaiHeaderedContentControl}">
+					<StackPanel>
+						<TextBox materialDesign:HintAssist.Hint="{Tx:TUnit Poloha, Unit=mm}" Text="{Binding ActPosition, Mode=OneWay, StringFormat=0.000}" IsReadOnly="True"
+								 Width="{Binding ActualWidth,ElementName=load}"/>
+						<DockPanel>
+							<Base:IconButton DockPanel.Dock="Right" Style="{StaticResource IconButton_Tare}" Command="{Binding TareLoadCommand}" HorizontalAlignment="Stretch"
+											 Visibility="{Binding ActiveUser.ConfiguratorVisibility}"/>
+							<TextBox x:Name="load" materialDesign:HintAssist.Hint="{Tx:TUnit Síla, Unit=N}" Text="{Binding ActLoad, Mode=OneWay, StringFormat=0.0}" IsReadOnly="True" HorizontalAlignment="Stretch"/>
+						</DockPanel>
+
+						<Base:Led Content="{Tx:TT EDC,Text2=Zapnuto}" IsChecked="{Binding IsOn,Mode=OneWay}" Margin="2"/>
+						<Base:Led Content="{Tx:T EDC reference OK}" IsChecked="{Binding IsReferenceOk,Mode=OneWay}" Margin="2"/>
+						<GroupBox Header="{Tx:T Horizontální suport}" Style="{StaticResource WaiHeaderedContentControl}">
+							<StackPanel>
+								<Base:Led Content="{Tx:T Poloha frézování}" IsChecked="{Binding IsMillingPos,Mode=OneWay}" Margin="2"/>
+								<Base:Led Content="{Tx:T Poloha vtisku}" IsChecked="{Binding IsIndentPos,Mode=OneWay}" Margin="2"/>
+								<Base:Led Content="{Tx:T Poloha kamery}" IsChecked="{Binding IsCameraPos,Mode=OneWay}" Margin="2"/>
+								<Base:Led Content="{Tx:T Poloha laseru}" IsChecked="{Binding IsLaserPos,Mode=OneWay}" Margin="2"/>
+								<Base:Led Content="{Tx:T Automat}" IsChecked="{Binding IsAutomatMode,Mode=OneWay}" Margin="2"/>
+								<Base:Led Content="{Tx:T Díl založen}" IsChecked="{Binding IsPartInserted,Mode=OneWay}" Margin="2"/>
+							</StackPanel>
+						</GroupBox>
+					</StackPanel>
+				</GroupBox>
+				<!-- výměna nástroje -->
+				<GroupBox Header="{Tx:T Nastavení}" Style="{StaticResource WaiHeaderedContentControl}"
+						  Visibility="{Binding ActiveUser.ConfiguratorVisibility}">
+					<StackPanel>
+						<Base:IconButton Caption="{Tx:T Výměna nástroje}" Icon="SwapHorizontal" Command="{Binding CommDoToolChangeCommand}"/>
+						<Base:IconButton Caption="{Tx:T Kontrolní měření}" Command="{Binding CommDoControlMeasurementCommand}" Icon="Ruler"/>
+					</StackPanel>
+				</GroupBox>
+				<!-- vertikální support -->
+				<GroupBox Header="{Tx:T Vtisk}" Style="{StaticResource WaiHeaderedContentControl}"
+						  Visibility="{Binding ActiveUser.ConfiguratorVisibility}">
+					<StackPanel>
+						<Button Content="{Tx:T Referencování}" Command="{Binding EdcReferenceCommand}"/>
+						<Button Content="{Tx:T Základní poloha}" Command="{Binding EdcBasePositionCommand}"/>
+						<Button Content="{Tx:T Pracovní poloha}" Command="{Binding EdcWorkingPositionCommand}" Visibility="{Binding ActiveUser.CalibrationVisibility}"/>
+						<Button Content="{Tx:T Na předpětí}" Command="{Binding EdcPreloadPositionCommand}" Visibility="{Binding ActiveUser.CalibrationVisibility}"/>
+						<Button Content="{Tx:T Na zatížení}" Command="{Binding EdcMainLoadPositionCommand}" Visibility="{Binding ActiveUser.CalibrationVisibility}"/>
+						<Button Content="{Tx:T Sekvence vtisku}" Command="{Binding EdcDoIndentCommand}" Visibility="{Binding ActiveUser.CalibrationVisibility}"/>
+						<FrameworkElement Height="8"/>
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition/>
+								<ColumnDefinition/>
+							</Grid.ColumnDefinitions>
+							<Button Content="{Tx:T Zapnout}" Command="{Binding TurnOnCommand}"/>
+							<Button Content="{Tx:T Vypnout}" Command="{Binding TurnOffCommand}" Grid.Column="1"/>
+						</Grid>
+					</StackPanel>
+				</GroupBox>
+
+				<GroupBox Header="{Tx:T Rychlost stroje}" Style="{StaticResource WaiHeaderedContentControl}"
+								  Visibility="{Binding ActiveUser.ConfiguratorVisibility}">
+					<StackPanel>
+						<FrameworkElement Height="8"/>
+						<TextBlock Style="{StaticResource TextBlockAsHint}" TextAlignment="Center" Opacity="1" Foreground="DarkOrange">
+									<Run Text="{Binding Movement.SimaticComm.MachineSpeed_perc}"/> %
+						</TextBlock>
+						<Slider Minimum="30" Maximum="100" IsSnapToTickEnabled="True"
+										TickFrequency="5" TickPlacement="BottomRight"
+										Value="{Binding Movement.SimaticComm.MachineSpeed_perc}" Foreground="DarkOrange"/>
+					</StackPanel>
+				</GroupBox>
+
+			</StackPanel>
+		</Border>
+
+		<!-- plocha -->
+		<StackPanel Grid.Column="1">
+			<!-- v prvním sloupci je nastavení EDC, ve druhém help -->
+			<StackPanel Orientation="Horizontal">
+				<GroupBox Header="{Tx:T EDC}" Style="{StaticResource WaiHeaderedContentControl}"
+						  Visibility="{Binding ActiveUser.AdminVisibility}">
+					<StackPanel>
+						<!-- základní poloha -->
+						<StackPanel>
+							<TextBlock Text="{Tx:TC Základní poloha}" Style="{StaticResource TextBlockAsHint}" HorizontalAlignment="Center"/>
+							<FrameworkElement Height="8"/>
+							<StackPanel Orientation="Horizontal">
+								<TextBox materialDesign:HintAssist.Hint="{Tx:TUnit Rychlost,Unit=mm/min}" Text="{Binding BasePosSpeed}"/>
+								<TextBox materialDesign:HintAssist.Hint="{Tx:TUnit Poloha,Unit=mm}" Text="{Binding BasePosPosition, UpdateSourceTrigger=PropertyChanged}"/>
+							</StackPanel>
+						</StackPanel>
+
+						<!-- oddělení sloupců -->
+						<Rectangle Height=".7" Fill="Silver" Margin="4"/>
+
+						<!-- pracovní poloha -->
+						<StackPanel>
+							<TextBlock Text="{Tx:TC Pracovní poloha}" Style="{StaticResource TextBlockAsHint}"/>
+							<FrameworkElement Height="8"/>
+							<StackPanel Orientation="Horizontal">
+								<TextBox materialDesign:HintAssist.Hint="{Tx:TUnit Rychlost,Unit=mm/min}" Text="{Binding WorkPosSpeed}"/>
+								<TextBox materialDesign:HintAssist.Hint="{Tx:TUnit Poloha,Unit=mm}" Text="{Binding WorkPosPosition, UpdateSourceTrigger=PropertyChanged}" Foreground="Aqua"/>
+							</StackPanel>
+						</StackPanel>
+					</StackPanel>
+				</GroupBox>
+
+				<!-- zaostření kamery -->
+				<GroupBox Header="{Tx:T Zaostření kamery}" Style="{StaticResource WaiHeaderedContentControl}" MaxWidth="260"
+						  Visibility="{Binding ActiveUser.ServiceVisibility}">
+					<StackPanel>
+						<TextBlock Text="{Tx:T Nastavení se provádí přes ruční ovládač}" Foreground="Bisque" TextWrapping="Wrap"/>
+						<TextBox materialDesign:HintAssist.Hint="{Tx:TUnit Softwarové omezení síly,Unit=N}" Text="{Binding Movement.CamSoftLimit,UpdateSourceTrigger=PropertyChanged}" Foreground="{StaticResource adminMethods}"/>
+						<TextBox materialDesign:HintAssist.Hint="{Tx:TUnit Poslední poloha doteku,Unit=mm}" Text="{Binding Movement.CamLastTouch,StringFormat=0.###,UpdateSourceTrigger=PropertyChanged}" Foreground="{StaticResource adminMethods}"/>
+						<TextBox materialDesign:HintAssist.Hint="{Tx:TUnit Zaostření v provozu,Unit=mm}" Text="{Binding Movement.CamFocus,StringFormat=0.###,UpdateSourceTrigger=PropertyChanged}" Foreground="{StaticResource adminMethods}"/>
+						<TextBox materialDesign:HintAssist.Hint="{Tx:TUnit Zaostření při kalibraci,Unit=mm}" Text="{Binding Movement.CamFocusCalibration,StringFormat=0.###,UpdateSourceTrigger=PropertyChanged}"/>
+					</StackPanel>
+				</GroupBox>
+
+				<!-- help -->
+				<GroupBox Header="{Tx:T Nápověda}" Style="{StaticResource WaiHeaderedContentControl}"
+						  Visibility="{Binding ActiveUser.ServiceVisibility}">
+					<StackPanel Margin="4" MaxWidth="264">
+						<TextBlock Foreground="{StaticResource iniFile}" TextWrapping="Wrap">
+							<Run Text="{Tx:TC Bílé}"/>
+							<Run Text="{Tx:T Hodnoty ukládané do Ini souboru}"/>
+						</TextBlock>
+
+						<TextBlock TextWrapping="Wrap">
+							<Run Text="{Tx:TC Barevně}"/>
+							<Run Text="   " Background="{StaticResource adminMethods}"/>
+							<Run Text="   " Background="{StaticResource defaultMethods}"/>
+							<Run Text="   " Background="{StaticResource userMethods}"/>
+							<Run Text="{Tx:T Hodnoty ukládané do databáze metod}"/>
+						</TextBlock>
+						<TextBlock  Foreground="{StaticResource adminMethods}" TextWrapping="Wrap">
+							<Run Text="{Tx:T Default hodnoty ze seznamu metod}"/>.
+							<Run Text="{Tx:T Lze měnit pouze přes admin}"/>.
+						</TextBlock>
+
+						<TextBlock Foreground="{StaticResource defaultMethods}" TextWrapping="Wrap">
+						<Run Text="{Tx:T Default hodnoty ze seznamu metod}"/>.
+						<Run Text="{Tx:T Lze je uživatelsky předefinovat}"/>.
+						</TextBlock>
+
+						<TextBlock Foreground="{StaticResource userMethods}" TextWrapping="Wrap">
+						<Run Text="{Tx:T Uživatelské hodnoty}"/>.
+						<Run Text="{Tx:T Převzato z definice zkoušky}"/>.
+						<Run Text="{Tx:T Předefinují default hodnoty ze seznamu metod}"/>
+						</TextBlock>
+					</StackPanel>
+				</GroupBox>
+			</StackPanel>
+
+			<StackPanel Orientation="Horizontal">
+				<StackPanel>
+					<!-- dotek -->
+					<GroupBox Header="{Tx:T Poloha doteku}" Style="{StaticResource WaiHeaderedContentControl}" HorizontalAlignment="Left"
+							  Visibility="{Binding ActiveUser.AdminVisibility}">
+						<StackPanel Orientation="Horizontal">
+							<GroupBox Header="{Tx:TUnit Rychlost,Unit=mm/min}" Style="{StaticResource WaiHeaderedContentControl}">
+								<StackPanel Orientation="Horizontal">
+									<TextBox materialDesign:HintAssist.Hint="{Tx:T Z metody}" Foreground="{StaticResource defaultMethods}" MinWidth="70"
+									 Text="{Binding Method.VPreload,UpdateSourceTrigger=PropertyChanged}"/>
+									<TextBox materialDesign:HintAssist.Hint="{Tx:T Uživatelská}" Foreground="{StaticResource userMethods}" MinWidth="70"
+									 materialDesign:TextFieldAssist.HasClearButton="True"
+									 Text="{Binding TestDef.UsrVPreload,UpdateSourceTrigger=PropertyChanged}"/>
+								</StackPanel>
+							</GroupBox>
+
+							<GroupBox Header="{Tx:TUnit Síla pro dotek,Unit=N}" Style="{StaticResource WaiHeaderedContentControl}">
+								<StackPanel Orientation="Horizontal">
+									<TextBox materialDesign:HintAssist.Hint="{Tx:T Z metody}" Foreground="{StaticResource defaultMethods}" MinWidth="70"
+									 Text="{Binding Method.FPreload,UpdateSourceTrigger=PropertyChanged}"/>
+									<TextBox materialDesign:HintAssist.Hint="{Tx:T Uživatelská}" Foreground="{StaticResource userMethods}" MinWidth="70"
+									 materialDesign:TextFieldAssist.HasClearButton="True"
+									 Text="{Binding TestDef.UsrFPreload,UpdateSourceTrigger=PropertyChanged}"/>
+								</StackPanel>
+							</GroupBox>
+
+							<GroupBox Header="{Tx:TUnit Omezení dráhy,Unit=mm}" Style="{StaticResource WaiHeaderedContentControl}">
+								<StackPanel Orientation="Horizontal">
+									<TextBox materialDesign:HintAssist.Hint="{Tx:TTS Admin, TextSeparator=': ', Text2=Ini soubor}"
+									 Text="{Binding MaxPosition}"/>
+								</StackPanel>
+							</GroupBox>
+						</StackPanel>
+					</GroupBox>
+
+					<!-- definice vtisku podle definice zkoušky + ukládání změn do databáze -->
+					<StackPanel Orientation="Horizontal" HorizontalAlignment="Left"
+								Visibility="{Binding ActiveUser.AdminVisibility}">
+						<!-- podle normy -->
+						<GroupBox Header="{Tx:T Definice vtisku podle definice zkoušky}" Style="{StaticResource WaiHeaderedContentControl}" HorizontalAlignment="Left">
+							<StackPanel >
+								<StackPanel Orientation="Horizontal">
+									<Border Style="{StaticResource DefaultBorder}">
+										<StackPanel Orientation="Horizontal">
+											<!-- hodnoty přepočtu mezi F_N a F_kgf musí být přes proměnnou, aby se hodnoty hned aktualizovaly -->
+											<TextBox materialDesign:HintAssist.Hint="{Tx:TUnit Síla,Unit=kgf}" Foreground="{StaticResource adminMethods}"
+											 Text="{Binding F_kgf,StringFormat=0.###,UpdateSourceTrigger=PropertyChanged}"/>
+											<TextBlock Text="{Tx:T nebo}" VerticalAlignment="Center" Margin="4"/>
+											<TextBox materialDesign:HintAssist.Hint="{Tx:TUnit Síla,Unit=N}" Foreground="{StaticResource adminMethods}"
+											 Text="{Binding F_N,StringFormat=0.###,UpdateSourceTrigger=PropertyChanged}"/>
+										</StackPanel>
+									</Border>
+									<TextBox materialDesign:HintAssist.Hint="{Tx:TUnit Čas odlehčení,Unit=s}" ToolTip="{Tx:T Čas pro odlehčení z hlavního zatížení na nulovou sílu}"
+								 Text="{Binding UnloadTime_s}"/>
+								</StackPanel>
+								<!-- čas nárůstu síly a čas držení síly -->
+								<StackPanel Orientation="Horizontal">
+									<!-- čas nárůstu síly -->
+									<GroupBox Header="{Tx:TUnit Čas nárůstu síly,Unit=s}" Style="{StaticResource WaiHeaderedContentControl}">
+										<StackPanel Orientation="Horizontal">
+											<TextBox materialDesign:HintAssist.Hint="{Tx:T Z metody}" Foreground="{StaticResource defaultMethods}"
+										 Text="{Binding Method.T,UpdateSourceTrigger=PropertyChanged}"/>
+											<TextBox materialDesign:HintAssist.Hint="{Tx:T Uživatelská}" Foreground="{StaticResource userMethods}"
+											 materialDesign:TextFieldAssist.HasClearButton="True"
+										 Text="{Binding TestDef.UsrT, UpdateSourceTrigger=PropertyChanged}"/>
+										</StackPanel>
+									</GroupBox>
+									<!-- čas držení síly -->
+									<GroupBox Header="{Tx:TUnit Čas držení síly,Unit=s}" Style="{StaticResource WaiHeaderedContentControl}">
+										<StackPanel Orientation="Horizontal">
+											<TextBox materialDesign:HintAssist.Hint="{Tx:T Z metody}" Foreground="{StaticResource defaultMethods}"
+										 Text="{Binding Method.TDelay, UpdateSourceTrigger=PropertyChanged}"/>
+											<TextBox materialDesign:HintAssist.Hint="{Tx:T Uživatelská}" Foreground="{StaticResource userMethods}"
+											 materialDesign:TextFieldAssist.HasClearButton="True"
+										 Text="{Binding TestDef.UsrTDelay,UpdateSourceTrigger=PropertyChanged}"/>
+										</StackPanel>
+									</GroupBox>
+								</StackPanel>
+							</StackPanel>
+						</GroupBox>
+
+						<!-- Ukládání změn do databáze -->
+						<GroupBox Header="{Tx:T Změny v aktívní metodě}" Style="{StaticResource WaiHeaderedContentControl}">
+							<Border Style="{StaticResource AccentBorder}" Margin="0" Padding="4" BorderThickness="4" VerticalAlignment="Top"
+									BorderBrush="{Binding IsDbChanged,Converter={x:Static labConverters:BoolToAccentColorConverter.Instance}}">
+								<StackPanel>
+									<Base:IconButton Caption="{Tx:T Uložit}" Icon="ContentSaveEditOutline" Command="{Binding DbSaveCommand}"/>
+									<Base:IconButton Caption="{Tx:T Storno}" Icon="Cancel" Command="{Binding DbCancelCommand}"/>
+									<!--<Base:IconButton Caption="{Tx:T Aktualizovat}" Icon="Refresh" Command="{Binding DbRefreshCommand}"/>-->
+								</StackPanel>
+							</Border>
+						</GroupBox>
+					</StackPanel>
+				</StackPanel>
+
+				<!-- držení síly - pro kalibraci síly -->
+				<GroupBox Header="{Tx:T Kontrola kalibrace síly}" Style="{StaticResource WaiHeaderedContentControl}" HorizontalAlignment="Left"
+						  Visibility="{Binding ActiveUser.CalibrationVisibility}">
+					<StackPanel>
+						<StackPanel>
+							<TextBox materialDesign:HintAssist.Hint="{Tx:TUnit Síla,Unit=N}" Text="{Binding CalibF}" MinWidth="100"/>
+							<TextBox materialDesign:HintAssist.Hint="{Tx:TUnit Čas nárůstu,Unit=s}" Text="{Binding CalibT}" MinWidth="100"/>
+							<TextBox materialDesign:HintAssist.Hint="{Tx:TUnit Výdrž,Unit=s}" Text="{Binding CalibTDelay}" MinWidth="100"/>
+						</StackPanel>
+						<Border Style="{StaticResource ControlBorder}" BorderThickness="0" Margin="8,0">
+							<StackPanel MinWidth="110">
+								<Button Content="{Tx:T Najet na sílu}" Command="{Binding CmdCalibMainLoadCommand}"/>
+								<Button Content="{Tx:T Odlehčit}" Command="{Binding CmdUnloadCommand}"/>
+								<Button Content="{Tx:T Provést vtisk}" Command="{Binding CmdCalibIndentCommand}"/>
+							</StackPanel>
+						</Border>
+					</StackPanel>
+				</GroupBox>
+			</StackPanel>
+
+			<!-- Simatic - horizontální suport -->
+			<GroupBox Header="{Tx:T Simatic}" Style="{StaticResource WaiHeaderedContentControl}" HorizontalAlignment="Left"
+					  Visibility="{Binding ActiveUser.ConfiguratorVisibility}">
+				<StackPanel>
+					<StackPanel Orientation="Horizontal">
+						<GroupBox Header="{Tx:T Přítlak}" Style="{StaticResource WaiHeaderedContentControl}" HorizontalAlignment="Left" MinWidth="70">
+							<StackPanel VerticalAlignment="Center">
+								<Base:IconButton Icon="ArrowUpBoldBoxOutline" IconDock="Top" Command="{Binding VSupportUpCommand}"/>
+								<Base:IconButton Icon="ArrowDownBoldBoxOutline" IconDock="Bottom" Command="{Binding VSupportDownCommand}"/>
+							</StackPanel>
+						</GroupBox>
+
+						<GroupBox Header="{Tx:T Polohy horizontálního suportu}" Style="{StaticResource WaiHeaderedContentControl}" HorizontalAlignment="Left">
+							<StackPanel VerticalAlignment="Center">
+								<StackPanel Orientation="Horizontal">
+									<Button Content="{Tx:T Základní}" Command="{Binding CommToBasePositionCommand}" Style="{StaticResource btnSet}"/>
+									<Button Content="{Tx:T Kalibrace}" Command="{Binding CommToCalibPositionCommand}" Style="{StaticResource btnSet}"
+											Visibility="{Binding ActiveUser.AdminVisibility}"/>
+
+									<!-- combobox s umístěním vtisku - použitý pouze u stroje s rotací láhve -->
+									<ComboBox materialDesign:HintAssist.Hint="{Tx:T Umístění vtisku}"
+											  ItemsSource="{Binding Source={x:Static glb:IndCamPosOffsetExtensions.Titles}}"
+											  SelectedIndex="{Binding Movement.IndCamPosOffset}"
+											  Visibility="{Binding Source={x:Static glb:Glb.Current}, Path=IsHwRotationUsed, Converter={x:Static converters:VisibilityConverter.Instance}}"/>
+								</StackPanel>
+								<FrameworkElement Height="0"/>
+								<StackPanel Orientation="Horizontal">
+									<Base:IconButton Grid.Column="2" Caption="{Tx:T Fréza}" Icon="Bolt" IconDock="Top" Height="50" Width="60"
+												 Command="{Binding CommToMillingPositionCommand}"/>
+									<materialDesign:PackIcon Grid.Column="1" Kind="ArrowLeftRightBoldOutline" VerticalAlignment="Center"/>
+									<Base:IconButton Grid.Column="0" Caption="{Tx:T Vtisk}" Icon="DownloadMultipleOutline" IconDock="Top" Height="50" Width="60"
+												 Command="{Binding CommToIndentPositionCommand}"/>
+									<materialDesign:PackIcon Grid.Column="1" Kind="ArrowLeftRightBoldOutline" VerticalAlignment="Center"/>
+									<Base:IconButton Grid.Column="2" Caption="{Tx:T Kamera}" Icon="VideoVintage" IconDock="Top" Height="50" Width="60"
+												 Command="{Binding CommToCamPositionCommand}"/>
+								</StackPanel>
+							</StackPanel>
+						</GroupBox>
+
+						<GroupBox Header="{Tx:T Simatic info}" Style="{StaticResource WaiHeaderedContentControl}">
+							<StackPanel>
+								<TextBlock Style="{StaticResource TextBlockAsHint}">
+									<Run Text="{Tx:TC Nastavená rychlost}"/>
+									<Run Text="{Binding MachineSpeed_perc,Mode=OneWay}"/> %
+								</TextBlock>
+								<!-- poloha stopperu se zobrazuje pouze pro stroj BEZ rotace lahve -->
+								<TextBlock Style="{StaticResource TextBlockAsHint}"
+										   Visibility="{Binding Source={x:Static glb:Glb.Current}, Path=IsHwRotationUsed, Converter={x:Static converters:VisibilityConverterNeg.Instance}}">
+									<Run Text="{Tx:TC Poloha stoperu}"/>
+									<Run Text="{Binding StopperPos,StringFormat=F2,Mode=OneWay}"/>
+									<Run Text="{Tx:T mm}"/>
+								</TextBlock>
+
+								<!-- Šířka zábrusu - stroj s rotací lahve -->
+								<StackPanel Visibility="{Binding Source={x:Static glb:Glb.Current}, Path=IsHwRotationUsed, Converter={x:Static converters:VisibilityConverter.Instance}}">
+									<TextBlock Style="{StaticResource TextBlockAsHint}">
+										<Run Text="{Tx:TC Šířka zábrusu}"/>
+										<Run Text="{Binding MillingWidth,StringFormat=F2,Mode=OneWay}"/>
+										<Run Text="{Tx:T mm}"/>
+										<LineBreak/>
+										<Run Text="{Tx:TC Korekce polohy zábrusu}"/>
+										<Run Text="{Binding MillingPosCorrection,StringFormat=F2,Mode=OneWay}"/>
+										<Run Text="{Tx:T mm}"/>
+									</TextBlock>
+									<Button Content="{Tx:T Změřit šířku zábrusu}" Command="{Binding CommMeasMillingWidthCommand}"/>
+								</StackPanel>
+							</StackPanel>
+						</GroupBox>
+					</StackPanel>
+
+					<!-- podpěry - dole pod měřeným dílem -->
+					<StackPanel Orientation="Horizontal">
+						<GroupBox Header="{Tx:T Podpěry}" Style="{StaticResource WaiHeaderedContentControl}" HorizontalAlignment="Left" MinWidth="70"
+								  Visibility="{Binding Source={x:Static glb:Glb.Current}, Path=IsHwRotationUsed, Converter={x:Static converters:VisibilityConverterNeg.Instance}}">
+							<StackPanel>
+								<Base:IconButton Icon="ArrowUpBold" IconDock="Top" Command="{Binding LifterUpCommand}"/>
+								<Base:IconButton Icon="ArrowDownBold" IconDock="Bottom" Command="{Binding LifterDownCommand}"/>
+							</StackPanel>
+						</GroupBox>
+
+						<GroupBox Header="{Tx:T Sdružené příkazy}" Style="{StaticResource WaiHeaderedContentControl}" HorizontalAlignment="Left"
+								  Visibility="{Binding ActiveUser.ServiceVisibility}">
+							<StackPanel>
+								<StackPanel Orientation="Horizontal">
+									<!-- tlačítka pro rotaci dílu - pouze pro stroj s otáčením -->
+									<StackPanel Orientation="Horizontal" Visibility="{Binding Source={x:Static glb:Glb.Current}, Path=IsHwRotationUsed, Converter={x:Static converters:VisibilityConverter.Instance}}">
+										<Button Content="{Tx:T Otočit vzorek}" Command="{Binding CommRotatePartCommand}" Style="{StaticResource btnSet}"/>
+										<Button Content="{Tx:T Otočit vzorek pro korekci}" Command="{Binding CommRotatePart_CorrIndentCommand}" Style="{StaticResource btnSet}"/>
+									</StackPanel>
+
+									<Button Content="{Tx:T Stop}"   Command="{Binding CommStopMovementCommand}" Style="{StaticResource btnSet}"/>
+								</StackPanel>
+								<StackPanel Orientation="Horizontal">
+									<Button Content="{Tx:T Frézovat}" Command="{Binding CommDoMillingCommand}" Style="{StaticResource btnSet}"/>
+									<Button Content="{Tx:T Frézovat + vtisk}" Command="{Binding CommDoMillingAndIndentCommand}" Style="{StaticResource btnSet}"/>
+								</StackPanel>
+							</StackPanel>
+						</GroupBox>
+					</StackPanel>
+				</StackPanel>
+			</GroupBox>
+
+		</StackPanel>
+	</Grid>
+</UserControl>

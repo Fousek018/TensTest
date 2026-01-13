@@ -1,0 +1,54 @@
+﻿<UserControl x:Class="ModuleConsole.IndentImages.Views.IndentImageUC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ModuleConsole.IndentImages.Views"
+             mc:Ignorable="d" 
+             
+		    xmlns:Tx="clr-namespace:Vbloky.Translation;assembly=AppTranslation"	 
+			 
+          xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
+          Style="{DynamicResource MetroUserControlStyle}"
+          Background="{DynamicResource MaterialDesignPaper}"
+          TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+			 
+        xmlns:vm="clr-namespace:ModuleConsole.IndentImages.ViewModels"
+        d:DataContext="{d:DesignInstance Type=vm:IndentImageVM}"
+
+        >
+	<Grid>
+		<!-- dummy pro počet sloupců -->
+		<FrameworkElement x:Name="columnsProxy" Tag="{Binding ColumnsCount}"/>
+
+		<!-- Oblast s obrázky -->
+		<ItemsControl ItemsSource="{Binding Images}">
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<UniformGrid Columns="{Binding Tag, ElementName=columnsProxy}" />
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
+
+			<ItemsControl.ItemTemplate>
+				<DataTemplate>
+					<Grid Margin="4">
+						<!-- Obrázek -->
+						<Image Source="{Binding ImagePath}"
+                                   Stretch="Uniform"/>
+
+						<!-- Titulek přes obrázek -->
+						<TextBlock Text="{Binding Title}"
+                                       Background="White"
+                                       Foreground="Black"
+                                       Opacity="0.5"
+                                       Padding="4"
+                                       HorizontalAlignment="Left"
+                                       VerticalAlignment="Top"
+                                       FontWeight="Bold" />
+					</Grid>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+	</Grid>
+
+</UserControl>

@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net9.0-windows</TargetFramework>
+		<UseWPF>true</UseWPF>
+		<AssemblyName>ModuleConsole</AssemblyName>
+		<LangVersion>preview</LangVersion>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DebugType>none</DebugType>
+		<DebugSymbols>false</DebugSymbols>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\LibLabortechAux\LabEdc\LabEdc.csproj" />
+		<ProjectReference Include="..\ModuleDatabase\ModuleDatabase.csproj" />
+		<ProjectReference Include="..\ModuleOptions\ModuleOptions.csproj" />
+		<ProjectReference Include="..\Simatic\Simatic.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<Reference Include="DoPE10x64Net">
+			<HintPath>..\LibLabortechAux\LabEdc\DoPE10x64Net.dll</HintPath>
+		</Reference>
+	</ItemGroup>
+</Project>

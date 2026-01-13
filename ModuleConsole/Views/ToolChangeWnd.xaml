@@ -1,0 +1,120 @@
+﻿<Window xmlns:Views="clr-namespace:ModuleConsole.IndentImages.Views"  
+		xmlns:Base="clr-namespace:MyControls.Base;assembly=MyControls" 
+		xmlns:UserControls="clr-namespace:MyControls.UserControls;assembly=MyControls"  
+		x:Class="ModuleConsole.Views.ToolChangeWnd"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ModuleConsole.Views"
+        mc:Ignorable="d"
+        xmlns:Tx="clr-namespace:Vbloky.Translation;assembly=AppTranslation"
+		
+		SizeToContent="WidthAndHeight"
+		Topmost="True"
+		
+          xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
+          Style="{DynamicResource MetroWindowStyle}"
+          Background="{DynamicResource MaterialDesignPaper}"
+		      TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        
+        xmlns:vm="clr-namespace:ModuleConsole.ViewModels"
+        d:DataContext="{d:DesignInstance Type=vm:ToolChangeVM}"
+		>
+	<Border Style="{StaticResource AccentBorder}">
+		<Grid>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+			<!-- ovládání - vlevo -->
+			<StackPanel Grid.Column="0">
+				<TextBox materialDesign:HintAssist.Hint="{Tx:TUnit Krok pro přidávání/ubírání,Unit=mm}"
+					 Text="{Binding AddStep,StringFormat=F3}"/>
+
+				<StackPanel Orientation="Horizontal">
+					<UserControls:TextBoxWithRange Caption="{Tx:TUnit Poloha frézování,Unit=mm}"
+										   MinRange="{Binding MinRange}"										   
+										   MaxRange="{Binding MaxRange}"
+										   Value="{Binding MillingPosRel,StringFormat=F3}"/>
+					<Base:IconButton Icon="ArrowCollapseVertical" Command="{Binding ZeroingCommand}" Margin="8"/>
+					<Base:IconButton Icon="ArrowDownBold" Command="{Binding AddCommand}" Margin="8"/>
+					<Base:IconButton Icon="ArrowUpBold" Command="{Binding SubCommand}" Margin="8"/>
+				</StackPanel>
+
+
+				<Rectangle Height="1" Fill="Silver" Margin="8"/>
+
+				<!-- poloha výměny frézy a výměny kuličky -->
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition/>
+						<ColumnDefinition/>
+					</Grid.ColumnDefinitions>
+					<Base:IconButton Grid.Column="0" Caption="{Tx:T Výměna frézy}" Icon="Tools" Command="{Binding ToToolChangePosCommand}" Margin="4,8"/>
+					<Base:IconButton Grid.Column="1" Caption="{Tx:T Výměna kuličky}" Icon="DownloadCircle" Command="{Binding ToBallChangePosCommand}" Margin="4,8"/>
+				</Grid>
+
+				<!-- přitlak / uvolnění suportu -->
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto"/>
+						<ColumnDefinition Width="*"/>
+						<ColumnDefinition Width="Auto"/>
+					</Grid.ColumnDefinitions>
+
+					<Base:IconButton Grid.Column="0" Caption="{Tx:T Dolů}" Icon="ArrowDownBoldBoxOutline" IconDock="Right" Command="{Binding VSupportDownCommand}" MinWidth="90"/>
+					<TextBlock Grid.Column="1" Text="{Tx:T Přítlak vzorku}" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap"/>
+					<Base:IconButton Grid.Column="2" Caption="{Tx:T Nahoru}" Icon="ArrowUpBoldBoxOutline" Command="{Binding VSupportUpCommand}" MinWidth="90"/>
+				</Grid>
+				<Button Command="{Binding DoMillingAndCamCommand}" Margin="4,8" HorizontalContentAlignment="Stretch">
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="Auto"/>
+							<ColumnDefinition Width="*"/>
+						</Grid.ColumnDefinitions>
+						<StackPanel Orientation="Horizontal">
+							<!-- automatické přidávání před frézováním na žádost Jirky zrušeno -->
+							<!--<materialDesign:PackIcon Kind="ArrowDown"/>
+							<FrameworkElement Width="8"/>-->
+							<materialDesign:PackIcon Kind="Transition"/>
+							<FrameworkElement Width="8"/>
+							<materialDesign:PackIcon Kind="VideoVintage"/>
+							<FrameworkElement Width="8"/>
+						</StackPanel>
+
+						<TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+							<!--<Run Text="{Tx:T Poloha}"/>-->
+							<!--> -->
+							<Run Text="{Tx:T Frézování}"/>
+							> <Run Text="{Tx:T Kamera}"/>
+						</TextBlock>
+					</Grid>
+				</Button>
+
+				<GroupBox Header="{Tx:T Nastavení rozsahu pohybu}" Visibility="{Binding ActiveUser.ServiceVisibility}" Style="{StaticResource WaiHeaderedContentControl}">
+					<StackPanel>
+						<StackPanel Orientation="Horizontal">
+							<TextBox materialDesign:HintAssist.Hint="{Tx:TUnit Minimum,Unit=mm}" Text="{Binding MinRange}"/>
+							<FrameworkElement Width="8"/>
+							<TextBox materialDesign:HintAssist.Hint="{Tx:TUnit Maximum,Unit=mm}" Text="{Binding MaxRange}"/>
+						</StackPanel>
+					</StackPanel>
+				</GroupBox>
+
+				<GroupBox Header="{Tx:T Poloha vtisku pro výměnu kuličky}" Style="{StaticResource WaiHeaderedContentControl}" Visibility="{Binding ActiveUser.ServiceVisibility}">
+					<StackPanel>
+						<TextBox materialDesign:HintAssist.Hint="{Tx:TUnit Poloha,Unit=mm}" Text="{Binding BallChangePosition}"/>
+					</StackPanel>
+				</GroupBox>
+
+				<Base:IconButton Icon="Close" Caption="{Tx:T Zavřít}" MinWidth="120" HorizontalAlignment="Center" Click="IconButton_Click"/>
+			</StackPanel>
+
+			<!-- obraz vtisku vpravo -->
+			<Grid Grid.Column="1">
+				<Image Source="{Binding ImageSource}" Stretch="Uniform" MaxWidth="400"/>
+			</Grid>
+		</Grid>
+	</Border>
+</Window>

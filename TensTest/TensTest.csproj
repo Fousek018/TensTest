@@ -8,6 +8,22 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BaseLib\AppTranslationControls\AppTranslationControls.csproj" />
+    <ProjectReference Include="..\BaseLib\AppTranslation\AppTranslation.csproj" />
+    <ProjectReference Include="..\BaseLib\AuxUtils\AuxUtils.csproj" />
+    <ProjectReference Include="..\BaseLib\BaseLog\BaseLog.csproj" />
+    <ProjectReference Include="..\BaseLib\BaseUtils\BaseUtils.csproj" />
+    <ProjectReference Include="..\BaseLib\MyControls\MyControls.csproj" />
+    <ProjectReference Include="..\BaseLib\Navigation\Navigation.csproj" />
+    <ProjectReference Include="..\LibLabortechAux\LabEdc\LabEdc.csproj" />
+    <ProjectReference Include="..\LibLabortechAux\LabEft\LabEft.csproj" />
+    <ProjectReference Include="..\LibLabortech\LabBase\LabBase.csproj" />
+    <ProjectReference Include="..\LibLabortech\LabDbControls\LabDbControls.csproj" />
+    <ProjectReference Include="..\LibLabortech\LabLogger\LabLogger.csproj" />
+    <ProjectReference Include="..\LibLabortech\LibLabortech\LibLabortech.csproj" />
+  </ItemGroup>
+
 	
 
 </Project>
